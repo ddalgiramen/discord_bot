@@ -13,12 +13,13 @@ import sqlite3
 #loading .env file
 load_dotenv()
 
-
 intents = discord.Intents.default()
 intents.message_content = True
 JST = timezone(timedelta(hours=+9), 'JST')
 client = discord.Client(intents=intents)
 
+
+GENERAL_CH_ID = 1010108583670722590
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}\n')
@@ -26,8 +27,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.content.startswith('<:ohajett:1059962614869938278>'):
-        print("GET")
+    if message.content.startswith('<:ohajett:1059962614869938278>') and message.channel.id == GENERAL_CH_ID:
         conn = sqlite3.connect("counts.db")
         today = datetime.now(JST).date()
         c = conn.cursor()
@@ -68,6 +68,8 @@ async def on_message(message):
             await message.channel.send("You have already counted today. Please try again tomorrow.")
         conn.commit()
         conn.close()
+    elif message.content.startswith('<:ohajett:1059962614869938278>') and message.channel.id != GENERAL_CH_ID:
+        await message.add_reaction("<:ohajett:1059962614869938278>")
 
     if message.content.startswith("!show_count"):
         conn = sqlite3.connect('counts.db')
