@@ -65,7 +65,7 @@ async def on_message(message):
         else:
             print("NOTHING")
             # the user has already counted today
-            await message.channel.send("You have already counted today. Please try again tomorrow.")
+            await message.channel.send("Already counted <:ohajett:1059962614869938278>!")
         conn.commit()
         conn.close()
     elif message.content.startswith('<:ohajett:1059962614869938278>') and message.channel.id != GENERAL_CH_ID:
@@ -80,14 +80,17 @@ async def on_message(message):
         """, (str(message.author.id),)).fetchone()
 
         if result:
-            text = f'hi!{result[1]}. Your attendance is {result[2]}'
+            if {result[2] == 1}:
+                text = f'<:ohajett:1059962614869938278> {result[1]}! First time <:ohajett:1059962614869938278>!'
+            else:
+                text = f'<:ohajett:1059962614869938278> {result[1]}! <:ohajett:1059962614869938278> {result[2]} times!'
             await message.channel.send(text)
         else:
             await message.channel.send("There is no data.")
         conn.close()
 @tasks.loop(seconds=60)
 async def loop():
-    # 現在の時刻
+    # current time
     now = datetime.now(JST).strftime('%H:%M')
     if now == '07:30':
         channel = client.get_channel(1010108583670722590)
